@@ -57,7 +57,7 @@ To pass commands from the container, use: \
 To login as `user`, use: \
 `rlc-launch [CONTAINER_NAME] su - user`
 
-*The `user` command is already configured for you`
+*The `user` command is already configured for you*
 
 Once you loggined in to the container, your home directory is synced from your host, here are the bind-mounted partitions from host:
 * `/tmp` = `$PREFIX/tmp`
