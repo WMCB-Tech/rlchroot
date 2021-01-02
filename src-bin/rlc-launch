@@ -103,8 +103,8 @@ EOM
 echo "localhost" > "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/hostname"
 ### /etc/resolv.conf
 cat > "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/resolv.conf" <<- EOM
-nameserver 8.8.8.8
-nameserver 8.8.4.4
+nameserver 1.1.1.1
+nameserver 1.0.0.1
 EOM
 ### Fake the proc contents for SELinux
 ### /proc/stat
