@@ -1,7 +1,8 @@
 #!/bin/bash
 
 ### Change archive to old.releases
-sed -i 's/archive.ubuntu/old-releases.ubuntu/g' /etc/apt/sources.list
+sed -i 's/archive.ubuntu/old-releases.ubuntu/g' /etc/apt/sources.list ||:
+sed -i 's|ports.ubuntu.com/ubuntu-ports|old-releases.ubuntu.com/ubuntu|g' /etc/apt/sources.list ||:
 
 ### Colored Environment Variables
 RED="$(tput setaf 1)$(tput bold)"
