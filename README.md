@@ -13,7 +13,7 @@ For now, i will maintain a subset of distros that is based on debian which is (U
 Each of their releases has it's own version (see `rlc-ls` command)
 
 # Installation
-1. Download the [Debian Package file](https://github.com/WMCB-Tech/rlchroot/releases/download/1.00-pre1/rlchroot-1.00-pre1.deb) for Termux
+1. Download the [Debian Package file](https://github.com/WMCB-Tech/rlchroot/releases/tag/1.01) for Termux
 2. Install the Debian Package file with `dpkg` or `apt` (`apt install ./path/to/rlchroot.deb`)
 
 # RLChroot Commands
