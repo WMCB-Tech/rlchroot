@@ -273,6 +273,10 @@ case "$DISTRO_NAME" in
 		DIST=cosmic
 		cosmic
 		;;
+	groovy|ubuntu-groovy)
+		DIST=groovy
+		groovy
+		;;
 	buster|debian-buster)
 		DIST=buster
 		buster
