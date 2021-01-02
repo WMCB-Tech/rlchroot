@@ -1,0 +1,75 @@
+#!/data/data/com.termux/files/usr/bin/bash
+### rlc-create - destroys the proot container installed
+### All Rights Reserved @wmcbtech30 (2021)
+RLCHROOT_ROOTFS_DIR="$PREFIX/var/rlc/containers"
+CHROOT_NAME="$1"
+
+### Colored Environment Variables
+RED="$(tput setaf 1)$(tput bold)"
+GREEN="$(tput setaf 2)$(tput bold)"
+YELLOW="$(tput setaf 3)$(tput bold)"
+NOATTR="$(tput sgr0)"
+
+### SIGNAL Trap
+sigtrap(){
+echo "${RED}Signal Recieved! Exiting as Requested..${NOATTR}"
+exit 2
+}
+
+trap 'sigtrap' HUP INT KILL QUIT TERM
+
+### Check if running as root
+if [ "$(whoami)" == "root" ]; then
+	echo "${RED}Running ${YELLOW}rlc-destroy${RED} as root is discouraged, Aborting Exit Code 2${NOATTR}"
+	exit 2
+fi
+
+### Check if no argument is specified
+if [ $# = 0 ]; then
+	echo "${GREEN}rlc-create: Deletes the Chroot Container (proot)"
+	echo ""
+	echo "Usage: "
+	echo "${YELLOW}rlc-destroy [CHROOT-NAME]"
+	echo ""
+	echo "${GREEN}Example Usage: "
+	echo "${YELLOW}rlc-destroy evilchroot"
+	echo "rlc-destroy ubuntu-testing${NOATTR}"
+	exit 2
+fi
+
+### Check if the Argument has Zero Strings
+if [ -z "$CHROOT_NAME" ]; then
+    echo "${RED}Please Specify the container name you want to destroy${NOATTR}"
+    exit 2
+fi
+
+### Check if the Container Exists
+if [ ! -e "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" ]; then
+    echo "${RED}WARNING: The requested container to delete ${YELLOW}$CHROOT_NAME${RED} isn't installed"
+    exit 2
+fi
+
+while true; do
+    read -p "${GREEN}Do you want to delete the container ${YELLOW}$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME${GREEN}? [y/N] ${NOATTR}" yn
+    case $yn in
+        [Yy]* ) true; break;;
+        [Nn]* ) echo "${YELLOW}Aborting...${NOATTR}"; exit 0;;
+        * ) echo "${YELLOW}Aborting...${NOATTR}"; exit 0;;
+    esac
+done
+
+### Delete the Container
+echo "${YELLOW}Deleting $RLCHROOT_ROOTFS_DIR/$CHROOT_NAME...${NOATTR}"
+chmod 777 "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" -R ||:
+rm -rf "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" ||:
+
+### Check if the container is deleted (or not)
+if [ ! -e "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" ]; then
+    echo "${GREEN}Sucessfully Deleted ${YELLOW}$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME${NOATTR}"
+    exit 0
+else
+    echo "${RED}The Container ${YELLOW}$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME${RED} is partially deleted${NOATTR}"
+    exit 2
+fi
+
+### END OF MESSAGE EOM

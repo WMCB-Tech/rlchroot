@@ -1,0 +1,10 @@
+#!/data/data/com.termux/files/usr/bin/bash
+### rlc-ls - Lists container installed 
+### All Rights Reserved @wmcbtech30 (2021)
+RLCHROOT_ROOTFS_DIR="$PREFIX/var/rlc/containers"
+GREEN="$(tput setaf 2)$(tput bold)"
+
+for fs in ${RLCHROOT_ROOTFS_DIR}; do
+    echo "${GREEN}List of installed Containers:${NOATTR}"
+    ls -1 $fs
+done
