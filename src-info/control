@@ -1,6 +1,6 @@
 Package: rlchroot
-Version: 1.00-pre1
-Section: Virtualization
+Version: 1.01
+Section: Containers
 Priority: optional 
 Architecture: all 
 Depends: wget, proot, tar, ncurses-utils
