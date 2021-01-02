@@ -79,7 +79,7 @@ if [ $# = 0 ]; then
 	echo "${YELLOW}rlc-create stretch stretchfs"
 	echo "rlc-create kali kali-rootfs"
 	echo ""
-	echo "${GREEN}If you want to delete the container, run ${YELLOW}rlc-delete${GREEN} command${NOATTR}"
+	echo "${GREEN}If you want to delete the container, run ${YELLOW}rlc-destroy${GREEN} command${NOATTR}"
 	exit 2
 fi
 
