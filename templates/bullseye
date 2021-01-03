@@ -15,14 +15,10 @@ NOATTR="$(tput sgr0)"
 ### Install some relevant packages
 echo "${GREEN}Updating the system and installing some packages${NOATTR}"
 apt update
-apt install sudo nano udisks2 dbus -yy --no-install-recommends ||:
+apt install sudo nano -y ||:
 apt install -f ||:
-dpkg --configure -a ||:
-echo "${GREEN}Configuring Packages${NOATTR}"
-echo "" > /var/lib/dpkg/info/dbus.postinst
-echo "" > /var/lib/dpkg/info/udisks2.postinst
 dpkg --configure -a
 
-echo "Adding the user 'user'"
+echo "${GREEN}Adding the user ${YELLOW}user${NOATTR}"
 useradd -m user -s /bin/bash
 echo "user ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/user

@@ -9,13 +9,8 @@ NOATTR="$(tput sgr0)"
 ### Install some relevant packages
 echo "${GREEN}Updating the system and installing some packages${NOATTR}"
 apt update
-apt install sudo nano udisks2 fprintd dbus -yy --no-install-recommends ||:
+apt install sudo nano -y ||:
 apt install -f ||:
-dpkg --configure -a ||:
-echo "${GREEN}Configuring Packages${NOATTR}"
-echo "" > /var/lib/dpkg/info/dbus.postinst
-echo "" > /var/lib/dpkg/info/udisks2.postinst
-echo "" > /var/lib/dpkg/info/libfprint-2-2\:$(dpkg --print-architecture).postinst
 dpkg --configure -a
 
 echo "${GREEN}Adding the user ${YELLOW}user${NOATTR}"
