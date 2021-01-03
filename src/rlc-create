@@ -109,7 +109,7 @@ focal(){
 	STRIP_TARBALL=0
 	### Ubuntu 20.04 Drops support for 32-bit anymore
 	if [ "$(uname -m)" == "i686" ]; then
-		echo "WARNING: Ubuntu 20.04 Drops support for 32-bit anymore"
+		echo "${RED}WARNING: Ubuntu 20.04 Drops support for 32-bit anymore${NOATTR}"
 		exit 2
 	fi
 	### Declare Configs
@@ -160,9 +160,9 @@ cosmic(){
 groovy(){
 	EXPECT="ubuntu-groovy-$(uname -m).tar.gz"
 	STRIP_TARBALL=0
-	### Ubuntu 20.04 Drops support for 32-bit anymore
+	### Ubuntu 20.10 Drops support for 32-bit anymore
 	if [ "$(uname -m)" == "i686" ]; then
-		echo "WARNING: Ubuntu 20.10 Drops support for 32-bit anymore"
+		echo "${RED}WARNING: Ubuntu 20.10 Drops support for 32-bit anymore${NOATTR}"
 		exit 2
 	fi
 	### Declare Configs
@@ -374,7 +374,6 @@ TEMPLATE_CFG="$RLCHROOT_TEMPLATES/$DIST"
 ### Function to run proot command for template configuration
 proot_run_cmd(){
 	echo "${GREEN}Performing Distro-Specific Steps${NOATTR}"
-	echo
 	setup_android_groups
 	setup_nameserver
 	unset LD_PRELOAD
