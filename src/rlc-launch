@@ -24,7 +24,7 @@ if [ "$(whoami)" == "root" ]; then
 fi
 
 ### Check if no argument is specified
-if [ $# = 0 ]; then
+if [ $# = 0 ] || [ $1 == "--help" ]; then
 	echo "${GREEN}rlc-launch: Launch the proot environment specified the container name"
 	echo ""
 	echo "Usage: "

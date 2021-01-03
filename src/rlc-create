@@ -63,7 +63,7 @@ esac
 }
 
 ### Check if no argument is specified
-if [ $# = 0 ]; then
+if [ $# = 0 ] || [ $1 == "--help" ]; then
 	echo "${GREEN}rlc-create: Install Chroots from Tarballs"
 	echo ""
 	echo "Usage: "
