@@ -52,6 +52,8 @@ rlc-create kali my-kali-container
 
 It will configure the container for you
 
+---
+
 To start the container, type:
 ```
 rlc-launch mycontainer
@@ -63,6 +65,8 @@ rlc-launch mycontainer mycommand
 ```
 
 You can list your installed container with `rlc-ls` command
+
+---
 
 To run the container as non-rooted, rlc already configures that for you with sudo access, run
 ```
@@ -87,6 +91,3 @@ While rlchroot does not require cgroups or extra layers of security. you may sti
 
 # Contributing
 Contributions are welcome, you may create PR's, submit a bug report and create a Feature Requests
-
-# Stay in touched
-* [Discord](https://bit.ly/WMCBDiscord)
