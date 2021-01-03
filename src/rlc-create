@@ -42,7 +42,7 @@ case "$(uname -m)" in
 	arm|armhf|armv7*|arm32)
 		DIST_ARCH_DEBIAN="dist-arm32v7"
 		DIST_ARCH_UBUNTU="armhf"
-		DIST_ARCH_ALPINE="${DIST_ARCH_UBUNTU}"
+		DIST_ARCH_ALPINE="armhf"
 		;;
 	arm64|aarch64|armv8*)
 		DIST_ARCH_DEBIAN="dist-arm64v8"
@@ -259,6 +259,7 @@ alpine-stable(){
 	EXPECT="alpine-stable-$(uname -m).tar.gz"
 	STRIP_TARBALL=0
 	### Declare Configs
+	check_arch
 	if [ -e "$RLCHROOT_CACHE/alpine-stable/$EXPECT" ]; then
 		DO_NOT_WGET=1
 	fi
@@ -271,6 +272,7 @@ alpine-edge(){
     EXPECT="alpine-edge-$(uname -m).tar.gz"
     STRIP_TARBALL=0
     ### Declare Configs
+    check_arch
     if [ -e "$RLCHROOT_CACHE/alpine-edge/$EXPECT" ]; then
         DO_NOT_WGET=1
     fi

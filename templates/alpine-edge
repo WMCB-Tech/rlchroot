@@ -14,5 +14,5 @@ apk add sudo nano -y ||:
 #dpkg --configure -a
 
 echo "${GREEN}Adding the user ${YELLOW}user${NOATTR}"
-useradd -m user -s /bin/bash
+useradd -m user -s /bin/ash
 echo "user ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/user
