@@ -259,6 +259,7 @@ alpine-stable(){
 	EXPECT="alpine-stable-$(uname -m).tar.gz"
 	STRIP_TARBALL=0
 	### Declare Configs
+	check_arch
 	if [ -e "$RLCHROOT_CACHE/alpine-stable/$EXPECT" ]; then
 		DO_NOT_WGET=1
 	fi
@@ -271,6 +272,7 @@ alpine-edge(){
     EXPECT="alpine-edge-$(uname -m).tar.gz"
     STRIP_TARBALL=0
     ### Declare Configs
+    check_arch
     if [ -e "$RLCHROOT_CACHE/alpine-edge/$EXPECT" ]; then
         DO_NOT_WGET=1
     fi
