@@ -325,7 +325,6 @@ fi
 
 get_fs_image(){
 	echo "${GREEN}Downloading the Image File: ${YELLOW}$DISTRO_NAME${NOATTR} "
-	echo
 	mkdir -p "$RLCHROOT_CACHE/$DIST" ||:
 	wget --tries=5 "$WGET_URL_LINK" -O "$RLCHROOT_CACHE/$DIST/$EXPECT.part"
 		if [ -e "$RLCHROOT_CACHE/$DIST/$EXPECT.part" ]; then
@@ -339,7 +338,6 @@ get_fs_image(){
 
 do_extract_filesystem(){
 	DESTPATH="$RLCHROOT_CACHE/$DIST/$EXPECT"
-	echo
 	echo "${GREEN}Installing the rootfs ${YELLOW}$DISTRO_NAME${GREEN}. This may take some time${NOATTR}"
 	mkdir "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" -p ||:
 	proot --link2symlink -0 tar --preserve-permissions --delay-directory-restore --strip="$STRIP_TARBALL" -xf "$DESTPATH" --exclude dev -C "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" ||:
