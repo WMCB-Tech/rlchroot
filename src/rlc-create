@@ -256,7 +256,7 @@ kali(){
 }
 
 alpine-stable(){
-	EXPECT="alpine-$(uname -m).tar.gz"
+	EXPECT="alpine-stable-$(uname -m).tar.gz"
 	STRIP_TARBALL=0
 	### Declare Configs
 	if [ -e "$RLCHROOT_CACHE/alpine-stable/$EXPECT" ]; then
@@ -268,7 +268,7 @@ alpine-stable(){
 }
 
 alpine-edge(){
-    EXPECT="alpine-$(uname -m).tar.gz"
+    EXPECT="alpine-edge-$(uname -m).tar.gz"
     STRIP_TARBALL=0
     ### Declare Configs
     if [ -e "$RLCHROOT_CACHE/alpine-edge/$EXPECT" ]; then
