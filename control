@@ -1,0 +1,8 @@
+Package: rlchroot
+Version: 1.01
+Section: Containers
+Priority: optional 
+Architecture: all 
+Depends: wget, proot, tar, ncurses-utils
+Maintainer: @wmcbtech30
+Description: Run Multiple Linux Distros on your Device without rooting, RLChroot Provides an LXC-Like Interface just like Udocker You'll be able to manage distros and it's configurations based on their templates
