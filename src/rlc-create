@@ -6,6 +6,7 @@
 ### * Ubuntu (Oldstable LTS/Stable LTS)
 ### * Debian (Buster/Stretch/Sid/Testing)
 ### * Kali (Rolling)
+### * Alpine (Stable/Edge)
 ###
 ### Templates are registered in:
 ### $PREFIX/var/rlc/distro-templates
@@ -72,7 +73,7 @@ if [ $# = 0 ]; then
 	echo "${YELLOW} Ubuntu"
 	echo " Debian"
 	echo " Kali"
-	echo " Alpine Linux"
+	echo " Alpine"
 	echo "${GREEN}You can view the list of available flavors with ${YELLOW}rlc-create list${GREEN} command"
 	echo ""
 	echo "Example Usage: "
@@ -95,7 +96,7 @@ list_distros(){
 	echo "${GREEN}Kali:"
 	echo "${YELLOW}kali (rolling)${NOATTR}"
 	echo ""
-	echo "${GREEN}Alpine Linux:"
+	echo "${GREEN}Alpine:"
 	echo "alpine-stable alpine-edge"
 }
 
