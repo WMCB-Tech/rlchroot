@@ -1,75 +1,92 @@
-# rlchroot (beta)
-RLChroot - Install Linux Distro without root, giving an LXC-Like Interface for Android, Linux and Non-Privileged Users
+[![Discord](https://img.shields.io/discord/591914197219016707.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/vpEv3HJ)      [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)](https://github.com/Naereen/badges/)
 
-# What's This?
-RLChroot Stands for (RootLess Chroot) giving the lxc-like commands (inspired by [udocker](https://github.com/indigo-dc/udocker)) for Termux without root \
-With all that said, you can manage your distros individually and do anything with them
-
-To run such distros, we use `proot` for rootless chroot management
+# rlchroot - RootLess Chroot
+RLChroot (RLC) Allows you to install Linux distros on your Android device without rooting, giving an LXC Like Interface inspired by [Udocker](https://github.com/indigo-dc/udocker)
 
 ### Supported Distros
-For now, i will maintain a subset of distros that is based on debian which is (Ubuntu, Debian, Kali)
+The only distros that i can maintain is the subset of Debian-based distros (`Ubuntu`, `Debian`, `Kali`), each of them has releases supported (see `rlc-create list` command)
 
-Each of their releases has it's own version (see `rlc-create list` command)
+Note that newer distros have bugs so please file a bug report
 
-### Do i need cgroups, veth, seccomp?
-`rlchroot` is not nearly complex as LXC/LXD does but it has the features the same as lxc but only minimal for now, see below
+Here are the distros we're planning to add:
+* Arch Linux
+* Fedora
+* Alpine
+* Void
+
+### Do i need Cgroups, VETH, seccomp?
+Currently it uses `proot` for chrooting, it uses `ptrace()` and does not use cgroups, veth and seccomp or any PAM Modules, as it uses host resources and limitations may occur, see below
 
 # Installation
-1. Download the [Debian Package file](https://github.com/WMCB-Tech/rlchroot/releases/tag/1.01) for Termux
-2. Install the Debian Package file with `dpkg` or `apt` (`apt install ./path/to/rlchroot.deb`)
+To install rlchroot, download the [debian package file](https://git.io/JLdcR) and install it via `dpkg` or `apt` \
+If you get dependency errors when using `dpkg`, run `apt install -f`
 
-# RLChroot Commands
-Here are the commands are present for now and we are working on fleshing out some commands
-* `rlc-create` - Creates the Distro and installs it from their templates
-* `rlc-launch` - Launches the Container
-* `rlc-destroy` - Destroys the Container
-* `rlc-ls` - Lists all the Installed Containers
-* `rlc-import` - Imports the container
-* `rlc-export` - Exports the Container
+# RLC Commands
+Here are the commands that is available, and others will be implemented in the future, for now here are the commands that is available:
+* `rlc-create`
+* `rlc-destroy`
+* `rlc-ls`
+* `rlc-launch`
+* `rlc-import`
+* `rlc-export`
 
-Here are the commands that we're working on in the future
-* `rlc-snapshot` - Sure there's a `rlc-import` and `rlc-export` command
-* `rlc-freeze` - Minimal Freeze (Using SIGSTOP)
-* `rlc-copy`
+Here are the commands that needs to fleshed out in the future:
+* `rlc-snapshot` - Sure there's an import and export commands
+* `rlc-freeze` and `rlc-unfreeze` - Minimal Freeze (Using SIGSTOP)
 * `rlc-download`
-* `rlc-file-push`
-* `rlc-file-pull`
+* `rlc-info`
 
-# Setting up your first container
-I would suggest Ubuntu 18.04, however a list of distros can be listed in `rlc-create list` command
+Pull Requests are welcome to implement these commands
 
-To Install the container (Ubuntu 18.04), Type: \
-`rlc-create bionic container1`
+### Setting up your first container
+I assume you setup Ubuntu 18.04 Container, to setup Ubuntu 18.04 container, create a container with `rlc-create` command
+```
+rlc-create bionic mycontainer
+```
+The *mycontainer* is the name of your container
 
-Or To install debian 10, type: \
-`rlc-create buster debian-name`
+Or to setup Kali Container, type:
+```
+rlc-create kali my-kali-container
+```
 
-Synopsis: \
-`rlc-create [DISTRO_NAME] [CONTAINER_NAME]`
+It will configure the container for you
 
-*Other distros may fail to install, please file a bug report*
+To start the container, type:
+```
+rlc-launch mycontainer
+```
 
-# Running your container
-To run your container, type: \
-`rlc-launch [CONTAINER_NAME]`
+Alternatively. to run a command from container, run:
+```
+rlc-launch mycontainer mycommand
+```
 
-To pass commands from the container, use: \
-`rlc-launch [CONTAINER_NAME] [COMMAND]`
+You can list your installed container with `rlc-ls` command
 
-To login as `user`, use: \
-`rlc-launch [CONTAINER_NAME] su - user`
+To run the container as non-rooted, rlc already configures that for you with sudo access, run
+```
+rlc-launch mycontainer su - user
+```
 
-*The `user` command is already configured for you*
+If you want to add user account, you may use `useradd` or `adduser` command
 
-Once you loggined in to the container, your home directory is synced from your host, here are the bind-mounted partitions from host:
-* `/tmp` = `$PREFIX/tmp`
-* `/home/user` = `$HOME`
-* `/root` = `$HOME`
+### Destroying the Container
+If you don't want to use your container anymore or is broken, run:
+```
+rlc-destroy mycontainer
+```
 
-# Deleting your Container
-You can delete your container by typing: \
-`rlc-destroy [CONTAINER_NAME]`
+And it will ask you to delete your container
 
-# Can i contribute?
-Yes, you can contribute by filing a bug report, PR's and much more
+# Limitations
+While `proot` can only emulate chroot, the limitations is that you won't be able to do low-level admin access, including creating chroots, mounting images, creating device nodes or access devices. this is all thanks to android security features so don't expect VPN or Networking stuff
+
+# Security
+While rlchroot does not require cgroups or extra layers of security. you may still get into trouble including stolen passwords, gaining access to your host partition, by default, rlchroot mounts your `/sdcard` `/system` and `/data` partition so be careful on what you're doing as you break stuff
+
+# Contributing
+Contributions are welcome, you may create PR's, submit a bug report and create a Feature Requests
+
+# Stay in touched
+* [Discord](https://bit.ly/WMCBDiscord)
