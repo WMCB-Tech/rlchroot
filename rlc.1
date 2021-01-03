@@ -1,0 +1,111 @@
+.\" RLC Manpage
+.TH RLC 1 "06 May 2010" "1.0" "RLChroot"
+.SH NAME
+RLChroot \- Install Linux Distro without root, giving an LXC-Like Interface for Android, Linux and Non-Privileged Users
+.SH SYNOPSIS
+rlc-create [DISTRO-FLAVOR] [CHROOT-NAME]
+.br
+rlc-destroy [CHROOT-NAME]
+.br
+rlc-launch [CHROOT-NAME] [OPTIONAL-EXEC-CMD] 
+.br
+rlc-ls 
+.br
+rlc-import [TARBALL] 
+.br
+rlc-export [CHROOT-NAME] [OUTPUT] 
+.br
+.SH DESCRIPTION
+RLChroot stands for (RootLess Chroot) giving the lxc-like commands (inspired by udocker) for Termux without root
+.br
+With all that said, you can manage your distros individually and do anything with them
+
+To run such distros, we use proot(1) for rootless chroot management
+.TP
+.B \f[C]Supported Distros\f[R]
+For now, i will maintain a subset of distros that is based on debian which is (Ubuntu, Debian, Kali)
+
+Each of their releases has it's own version (see rlc-create list command)
+.TP
+.B \f[C]Do i need cgroups, veth, seccomp?\f[R]
+RLChroot is not nearly complex as LXC/LXD does but it has the features the same as lxc but only minimal for now, see below
+.SH COMMANDS
+Here are the commands are present for now and we are working on fleshing out some commands
+
+.IP \[bu]
+rlc-create - Creates the Distro and installs it from their templates
+.IP \[bu] 
+rlc-launch - Launches the Container
+.IP \[bu] 
+rlc-destroy - Destroys the Container
+.IP \[bu] 
+rlc-ls - Lists all the Installed Containers
+.IP \[bu] 
+rlc-import - Imports the container
+.IP \[bu] 
+rlc-export - Exports the Container
+.PP
+Here are the commands that we're working on in the future
+.IP \[bu]
+rlc-snapshot - Sure there's a rlc-import and rlc-export command
+.IP \[bu]
+rlc-freeze - Minimal Freeze (Using SIGSTOP)
+.IP \[bu]
+rlc-copy
+.IP \[bu]
+rlc-download
+.IP \[bu]
+rlc-file-push
+.IP \[bu]
+rlc-file-pull
+.SH Setting up your first container
+I would suggest Ubuntu 18.04, however a list of distros can be listed in rlc-create list command
+
+To Install the container (Ubuntu 18.04), Type:
+.IP $
+rlc-create bionic container1
+.PP
+Or To install debian 10, type:
+.IP $
+rlc-create buster debian-name
+.PP
+Synopsis:
+.IP $
+rlc-create [DISTRO_NAME] [CONTAINER_NAME]
+.PP
+Other distros may fail to install, please file a bug report
+.SH Running your container
+To run your container, type:
+.IP $
+rlc-launch [CONTAINER_NAME]
+.PP
+To pass commands from the container, use:
+.IP $
+rlc-launch [CONTAINER_NAME] [COMMAND]
+.PP
+To login as user, use:
+.IP $
+rlc-launch [CONTAINER_NAME] su - user
+.PP
+
+The user command is already configured for you
+
+Once you loggined in to the container, your home directory is synced from your host, here are the bind-mounted partitions from host:
+
+.IP \[bu]
+/tmp = $PREFIX/tmp
+.IP \[bu]
+/home/user = $HOME
+.IP \[bu]
+/root = $HOME
+.SH Deleting your Container
+You can delete your container by typing:
+.IP $
+rlc-destroy [CONTAINER_NAME]
+.PP
+.SH SEE ALSO
+proot(1), debdroid(1)
+.SH AUTHOR
+WMCB Tech (Original author of RLChroot)
+.br
+Leap of Azzam (Original creator of manpage for RLChroot)
