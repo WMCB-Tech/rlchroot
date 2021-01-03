@@ -26,7 +26,7 @@ if [ "$(whoami)" == "root" ]; then
 fi
 
 ### Check if no argument is specified
-if [ $# = 0 ]; then
+if [ $# = 0 ] || [ $0 == "--help" ]; then
 	echo "${GREEN}rlc-export: Exports Containers into gzip tarball"
 	echo ""
 	echo "Usage: "

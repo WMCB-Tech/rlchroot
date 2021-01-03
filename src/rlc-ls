@@ -3,6 +3,7 @@
 ### All Rights Reserved @wmcbtech30 (2021)
 RLCHROOT_ROOTFS_DIR="$PREFIX/var/rlc/containers"
 GREEN="$(tput setaf 2)$(tput bold)"
+NOATTR="$(tput sgr0)"
 
 for fs in ${RLCHROOT_ROOTFS_DIR}; do
     echo "${GREEN}List of installed Containers:${NOATTR}"
