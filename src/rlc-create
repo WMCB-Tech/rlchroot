@@ -42,7 +42,7 @@ case "$(uname -m)" in
 	arm|armhf|armv7*|arm32)
 		DIST_ARCH_DEBIAN="dist-arm32v7"
 		DIST_ARCH_UBUNTU="armhf"
-		DIST_ARCH_ALPINE="${DIST_ARCH_UBUNTU}"
+		DIST_ARCH_ALPINE="armhf"
 		;;
 	arm64|aarch64|armv8*)
 		DIST_ARCH_DEBIAN="dist-arm64v8"
