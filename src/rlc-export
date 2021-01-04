@@ -36,8 +36,7 @@ if [ $# = 0 ]; then
 	echo "${YELLOW}rlc-export kali-rootfs kali-snapshot-arm64.tar.gz"
 	echo "rlc-export ubuntu-focal focal-backup.dump"
 	echo ""
-	echo "${GREEN}NOTE: Since the Termux Home and Guest home are synced"
-	echo "Only the guest home will be exported and not the Termux Home so be aware of that you may lose customizations when you reset Termux${NOATTR}"
+	echo "${GREEN}NOTE: To avoid data corruption, close all containers before exporting${NOATTR}"
 	exit 2
 fi
 
