@@ -45,6 +45,7 @@ case "$(uname -m)" in
 		DIST_ARCH_UBUNTU="armhf"
 		DIST_ARCH_ALPINE="${DIST_ARCH_UBUNTU}"
 		DIST_ARCH_FEDORA="armhfp"
+		DIST_ARCH_ALPINE="armhf"
 		;;
 	arm64|aarch64|armv8*)
 		DIST_ARCH_DEBIAN="dist-arm64v8"
