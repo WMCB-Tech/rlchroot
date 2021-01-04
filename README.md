@@ -74,6 +74,11 @@ To run the container as non-rooted, rlc already configures that for you with sud
 rlc-launch mycontainer su - user
 ```
 
+Or if you want to use commands as user, do
+```
+rlc-launch mycontainer sudo -i -u user mycommand
+```
+
 If you want to add user account, you may use `useradd` or `adduser` command
 
 ### Destroying the Container
