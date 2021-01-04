@@ -92,6 +92,12 @@ And it will ask you to delete your container
 # Limitations
 While `proot` can only emulate chroot, the limitations is that you won't be able to do low-level admin access, including creating chroots, mounting images, creating device nodes or access devices. this is all thanks to android security features so don't expect VPN or Networking stuff
 
+Features lacks include:
+* Full Namespaces (Only minimal namespace)
+* Virtio Interface
+* Full cgroups support
+* Seccomp Support
+
 # Security
 While rlchroot does not require cgroups or extra layers of security. you may still get into trouble including stolen passwords, gaining access to your host partition, by default, rlchroot mounts your `/sdcard` `/system` and `/data` partition so be careful on what you're doing as you break stuff
 
