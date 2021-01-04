@@ -72,8 +72,6 @@ if [ ! -e /etc/.hushlogin ]; then
 echo ""
 echo "${GREEN}Welcome to the Linux Environment"
 echo ""
-echo "Your Home Directory is bound from your host directory (root and user)"
-echo ""
 echo "If you want to use non-root user account, rlchroot already configures that for you"
 echo "type ${YELLOW}su - user${GREEN} when logging in as normal user"
 echo ""

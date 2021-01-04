@@ -7,6 +7,7 @@
 ### * Debian (Buster/Stretch/Sid/Testing)
 ### * Kali (Rolling)
 ### * Alpine (Stable/Edge)
+### * Fedora (33)
 ###
 ### Templates are registered in:
 ### $PREFIX/var/rlc/distro-templates
@@ -42,17 +43,21 @@ case "$(uname -m)" in
 	arm|armhf|armv7*|arm32)
 		DIST_ARCH_DEBIAN="dist-arm32v7"
 		DIST_ARCH_UBUNTU="armhf"
+		DIST_ARCH_ALPINE="${DIST_ARCH_UBUNTU}"
+		DIST_ARCH_FEDORA="armhfp"
 		DIST_ARCH_ALPINE="armhf"
 		;;
 	arm64|aarch64|armv8*)
 		DIST_ARCH_DEBIAN="dist-arm64v8"
 		DIST_ARCH_UBUNTU="arm64"
 		DIST_ARCH_ALPINE="aarch64"
+		DIST_ARCH_FEDORA="${DIST_ARCH_ALPINE}"
 		;;
 	amd64|x86_64)
 		DIST_ARCH_DEBIAN="dist-amd64"
 		DIST_ARCH_UBUNTU="amd64"
 		DIST_ARCH_ALPINE="x86_64"
+		DIST_ARCH_FEDORA="${DIST_ARCH_ALPINE}"
 		;;
 	i686|i586|i386|x86|x86_32)
 		DIST_ARCH_DEBIAN="dist-i386"
@@ -74,6 +79,7 @@ if [ $# = 0 ] || [ $1 == "--help" ]; then
 	echo " Debian"
 	echo " Kali"
 	echo " Alpine"
+	echo " Fedora"
 	echo "${GREEN}You can view the list of available flavors with ${YELLOW}rlc-create list${GREEN} command"
 	echo ""
 	echo "Example Usage: "
@@ -98,6 +104,9 @@ list_distros(){
 	echo ""
 	echo "${GREEN}Alpine:"
 	echo "alpine-stable alpine-edge"
+	echo ""
+	echo "${GREEN}Fedora:"
+	echo "fedora32 fedora33"
 }
 
 ### Distro-Specific Functions
@@ -281,6 +290,44 @@ alpine-edge(){
     TEMPLATE="$RLCHROOT_TEMPLATES/alpine-edge"
 }
 
+fedora32(){
+    EXPECT="fedora-$(uname -m).tar.gz"
+    STRIP_TARBALL=0
+    ### Ubuntu 20.10 Drops support for 32-bit anymore
+    if [ "$(uname -m)" == "armhf" ]; then
+        echo "${RED}WARNING: Fedora 32 doesn't support ARMv7 architecture. If you have ARMv7 architecture, please use Fedora 33 instead${NOATTR}"
+        exit 2
+    fi
+    if [ "$(uname -m)" == "i686" ]; then
+        echo "${RED}WARNING: Fedora 32 drops support for 32-bit anymore${NOATTR}"
+        exit 2
+    fi
+    ### Declare Configs
+    check_arch
+    if [ -e "$RLCHROOT_CACHE/fedora/$EXPECT" ]; then
+        DO_NOT_WGET=1
+    fi
+    WGET_URL_LINK="https://dl.fedoraproject.org/pub/fedora/linux/releases/32/Container/${DIST_ARCH_FEDORA}/images/Fedora-Container-Base-32-1.6.${DIST_ARCH_FEDORA}.tar.xz"
+    TEMPLATE="$RLCHROOT_TEMPLATES/fedora32"
+}
+
+fedora33(){
+    EXPECT="fedora-$(uname -m).tar.gz"
+    STRIP_TARBALL=0
+    ### Ubuntu 20.10 Drops support for 32-bit anymore
+    if [ "$(uname -m)" == "i686" ]; then
+        echo "${RED}WARNING: Fedora 33 drops support for 32-bit anymore${NOATTR}"
+        exit 2
+    fi
+    ### Declare Configs
+    check_arch
+    if [ -e "$RLCHROOT_CACHE/fedora/$EXPECT" ]; then
+        DO_NOT_WGET=1
+    fi
+    WGET_URL_LINK="https://dl.fedoraproject.org/pub/fedora/linux/releases/33/Container/${DIST_ARCH_FEDORA}/images/Fedora-Container-Base-33-1.2.${DIST_ARCH_FEDORA}.tar.xz"
+    TEMPLATE="$RLCHROOT_TEMPLATES/fedora33"
+}
+
 ### Explicitly Check for Zero String for Argument
 if [ -z "$DISTRO_NAME" ]; then
 	echo "${RED}Please Specify a Distribution Name you want to install!${NOATTR}"
@@ -336,13 +383,21 @@ case "$DISTRO_NAME" in
 		DIST=kali
 		kali
 		;;
-	alpine-stable)
+	alpine|alpine3.12|alpine-stable)
 		DIST=alpine-stable
 		alpine-stable
 		;;
 	alpine-edge)
 		DIST=alpine-edge
 		alpine-edge
+		;;
+	fedora32)
+		DIST=fedora32
+		fedora32
+		;;
+	fedora33)
+		DIST=fedora33
+		fedora33
 		;;
 	list)
 		list_distros
@@ -368,7 +423,6 @@ fi
 
 get_fs_image(){
 	echo "${GREEN}Downloading the Image File: ${YELLOW}$DISTRO_NAME${NOATTR} "
-	echo
 	mkdir -p "$RLCHROOT_CACHE/$DIST" ||:
 	wget --tries=5 "$WGET_URL_LINK" -O "$RLCHROOT_CACHE/$DIST/$EXPECT.part"
 		if [ -e "$RLCHROOT_CACHE/$DIST/$EXPECT.part" ]; then
@@ -382,7 +436,6 @@ get_fs_image(){
 
 do_extract_filesystem(){
 	DESTPATH="$RLCHROOT_CACHE/$DIST/$EXPECT"
-	echo
 	echo "${GREEN}Installing the rootfs ${YELLOW}$DISTRO_NAME${GREEN}. This may take some time${NOATTR}"
 	mkdir "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" -p ||:
 	proot --link2symlink -0 tar --preserve-permissions --delay-directory-restore --strip="$STRIP_TARBALL" -xf "$DESTPATH" --exclude dev -C "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" ||:
