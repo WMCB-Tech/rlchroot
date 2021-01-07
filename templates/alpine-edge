@@ -9,9 +9,7 @@ NOATTR="$(tput sgr0)"
 ### Install some relevant packages
 echo "${GREEN}Updating the system and installing some packages${NOATTR}"
 apk update
-apk add sudo nano -y ||:
-#apt install -f ||:
-#dpkg --configure -a
+apk add sudo nano
 
 echo "${GREEN}Adding the user ${YELLOW}user${NOATTR}"
 useradd -m user -s /bin/ash
