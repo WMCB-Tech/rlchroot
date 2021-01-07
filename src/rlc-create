@@ -59,7 +59,7 @@ case "$(uname -m)" in
 		DIST_ARCH_ALPINE="x86_64"
 		DIST_ARCH_FEDORA="${DIST_ARCH_ALPINE}"
 		;;
-	i686|i586|i386|x86|x86_32)
+	i*86|x86|x86_32)
 		DIST_ARCH_DEBIAN="dist-i386"
 		DIST_ARCH_UBUNTU="i386"
 		DIST_ARCH_ALPINE="x86"
