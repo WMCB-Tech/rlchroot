@@ -277,19 +277,6 @@ alpine-stable(){
 	TEMPLATE="$RLCHROOT_TEMPLATES/alpine-stable"
 }
 
-alpine-edge(){
-    EXPECT="alpine-edge-$(uname -m).tar.gz"
-    STRIP_TARBALL=0
-    ### Declare Configs
-    check_arch
-    if [ -e "$RLCHROOT_CACHE/alpine-edge/$EXPECT" ]; then
-        DO_NOT_WGET=1
-    fi
-    WGET_URL_LINK="https://dl-cdn.alpinelinux.org/alpine/edge/releases/${DIST_ARCH_ALPINE}/alpine-minirootfs-3.12.0-${DIST_ARCH_ALPINE}.tar.gz"
-
-    TEMPLATE="$RLCHROOT_TEMPLATES/alpine-edge"
-}
-
 fedora32(){
     EXPECT="fedora-$(uname -m).tar.gz"
     STRIP_TARBALL=0
@@ -386,10 +373,6 @@ case "$DISTRO_NAME" in
 	alpine|alpine3.12|alpine-stable)
 		DIST=alpine-stable
 		alpine-stable
-		;;
-	alpine-edge)
-		DIST=alpine-edge
-		alpine-edge
 		;;
 	fedora32)
 		DIST=fedora32
