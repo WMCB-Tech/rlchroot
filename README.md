@@ -11,14 +11,13 @@ Note that newer distros have bugs so please file a bug report
 Here are the distros we're planning to add:
 * Arch Linux
 * Fedora
-* Alpine
 * Void
 
 ### Do i need Cgroups, VETH, seccomp?
 RLChroot isn't nearly that complex as LXC/LXD does, `rlchroot` uses `proot` for chrooting, it uses `ptrace()` and does not use cgroups, veth and seccomp or any PAM Modules, as it uses host resources and limitations may occur, see below
 
 # Installation
-To install rlchroot, download the [debian package file](https://git.io/JtOAZ) and install it via `dpkg` or `apt`
+To install rlchroot, download the [debian package file](https://git.io/JtOjw) and install it via `dpkg` or `apt`
 
 If you get dependency errors when using `dpkg`, run `apt install -f`
 
