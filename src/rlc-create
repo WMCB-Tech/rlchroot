@@ -73,6 +73,7 @@ if [ $# = 0 ] || [ $1 == "--help" ]; then
 	echo "${YELLOW} Ubuntu"
 	echo " Debian"
 	echo " Kali"
+	echo " Alpine"
 	echo "${GREEN}You can view the list of available flavors with ${YELLOW}rlc-create list${GREEN} command"
 	echo ""
 	echo "Example Usage: "
