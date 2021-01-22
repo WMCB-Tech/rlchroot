@@ -1,0 +1,19 @@
+#!/bin/sh
+
+apk update
+apk add ncurses
+
+### Colored Environment Variables
+RED="$(tput setaf 1)$(tput bold)"
+GREEN="$(tput setaf 2)$(tput bold)"
+YELLOW="$(tput setaf 3)$(tput bold)"
+NOATTR="$(tput sgr0)"
+
+### Install some relevant packages
+echo "${GREEN}Updating the system and installing some packages${NOATTR}"
+apk update
+apk add sudo nano
+
+echo "${GREEN}Adding the user ${YELLOW}user${NOATTR}"
+adduser user
+echo "user ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/user
