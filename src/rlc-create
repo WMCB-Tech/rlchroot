@@ -439,6 +439,7 @@ do_extract_filesystem(){
 	echo "${GREEN}Installing the rootfs ${YELLOW}$DISTRO_NAME${GREEN}. This may take some time${NOATTR}"
 	mkdir "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" -p ||:
 	proot --link2symlink -0 tar --preserve-permissions --delay-directory-restore --strip="$STRIP_TARBALL" -xf "$DESTPATH" --exclude dev -C "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" ||:
+	chmod 600 $RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/proc
 }
 
 setup_android_groups(){
