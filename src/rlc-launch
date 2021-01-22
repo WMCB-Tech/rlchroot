@@ -64,7 +64,7 @@ export EXTERNAL_SHARED_STORAGE="/sdcard"
 export MOZ_FAKE_NO_SANDBOX="1"
 export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/games:/usr/bin:/usr/sbin:/usr/games:/bin:/sbin"
 export DISPLAY="${RLCHROOT_HOST_DISPLAY}"
-export PULSE_SERVER="${RLCHROOT_PULSE_SERVER}"
+export PULSE_SERVER="${RLCHROOT_HOST_PULSE_SERVER}"
 export TZ="${RLCHROOT_HOST_TZ}"
 export TERM="${RLCHROOT_HOST_TERM}"
 
