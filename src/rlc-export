@@ -2,9 +2,10 @@
 ### rlc-export - exports the containers into tarball used for publishing images
 ### All Rights Reserved @wmcbtech30 (2021)
 RLCHROOT_ROOTFS_DIR="$PREFIX/var/rlc/containers"
-GETPWD="$(pwd)"
+BACKUP_DIR="$HOME/exported_containers"
+TIMESTAMP="$(date +%s)"
 CHROOT_NAME="$1"
-OUTPUT="$2"
+
 
 ### Colored Environment Variables
 RED="$(tput setaf 1)$(tput bold)"
@@ -26,23 +27,18 @@ if [ "$(whoami)" == "root" ]; then
 fi
 
 ### Check if no argument is specified
-if [ $# = 0 ]; then
+if [ $# = 0 ] || [ $1 == "--help" ]; then
 	echo "${GREEN}rlc-export: Exports Containers into gzip tarball"
 	echo ""
 	echo "Usage: "
-	echo "${YELLOW}rlc-export [CHROOT-NAME] [OUTPUT]"
+	echo "${YELLOW}rlc-export [CHROOT-NAME]"
 	echo ""
 	echo "${GREEN}Example Usage: "
-	echo "${YELLOW}rlc-export kali-rootfs kali-snapshot-arm64.tar.gz"
-	echo "rlc-export ubuntu-focal focal-backup.dump"
+	echo "${YELLOW}rlc-export kali-rootfs"
+	echo "rlc-export ubuntu-focal"
 	echo ""
-	echo "${GREEN}NOTE: To avoid data corruption, close all containers before exporting${NOATTR}"
-	exit 2
-fi
-
-### Check if the CWD is Writable
-if [ ! -w "$GETPWD" ]; then
-	echo "${RED}The Directory ${YELLOW}$GETPWD${RED} is unwritable${NOATTR}"
+	echo "${GREEN}NOTE: To avoid data corruption, close all containers before exporting"
+	echo "By Default, exported containers will be placed in \$HOME/exported_containers ${NOATTR}"
 	exit 2
 fi
 
@@ -58,19 +54,29 @@ if [ ! -e "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" ]; then
 	exit 2
 fi
 
-### Explicitly Check for Zero String for Argument
-if [ -z "$OUTPUT" ]; then
-    echo "${RED}Please Specify the Output of your tarball${NOATTR}"
-    exit 2
-fi
+### Setup Backup Directory
+mkdir -p "$BACKUP_DIR"
 
 ### Go To the Container dir to avoid adding subdirectory
 cd "$RLCHROOT_ROOTFS_DIR"
 
 ### Backup the Container
 echo "${YELLOW}Backing Up $RLCHROOT_ROOTFS_DIR/$CHROOT_NAME...${NOATTR}"
-proot --link2symlink -0 tar --preserve-permissions -zcf "$GETPWD/$OUTPUT" "$CHROOT_NAME" >/dev/null 2>&1 ||:
-echo "${GREEN}The container successfully exported!${NOATTR}"; exit 0
+if tar --preserve-permissions -zcf "$BACKUP_DIR/$CHROOT_NAME-$TIMESTAMP.tar.gz" "$CHROOT_NAME"; then
+	success=yes
+else
+	success=no
+fi
+
+if [ "$success" == "yes" ]; then
+    echo "${GREEN}The Container Successfully Exported"
+	echo "Your file is placed in:"
+	echo "${YELLOW}$BACKUP_DIR/$CHROOT_NAME-$TIMESTAMP.tar.gz${NOATTR}"
+    exit 0
+else
+    echo "${RED}The Container Successfully Exported with Errors${NOATTR}"
+    exit 2
+fi
 
 ### END OF MESSAGE EOM
 

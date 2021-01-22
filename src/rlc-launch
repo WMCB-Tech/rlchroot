@@ -24,7 +24,7 @@ if [ "$(whoami)" == "root" ]; then
 fi
 
 ### Check if no argument is specified
-if [ $# = 0 ]; then
+if [ $# = 0 ] || [ $1 == "--help" ]; then
 	echo "${GREEN}rlc-launch: Launch the proot environment specified the container name"
 	echo ""
 	echo "Usage: "
@@ -77,8 +77,7 @@ echo "type ${YELLOW}su - user${GREEN} when logging in as normal user"
 echo ""
 echo "The Environment variables is synced from your host, ${YELLOW}(PULSE_SERVER, DISPLAY, TZ)${GREEN}"
 echo ""
-echo "If you seen this message, you have a clean install of your distro, suggesting to run"
-echo "${YELLOW}apt update${GREEN}"
+echo "If you seen this message, you have a clean install of your distro, suggesting to update your system first"
 echo ""
 echo "To log out from linux environment, simply type ${YELLOW}exit${NOATTR}"
 echo ""
@@ -89,8 +88,10 @@ EOM
 
 ### Configure Stuff
 config_container(){
-### Add Unique PS1
+### Add Unique PS1 (For Debian-Based Containers only)
+if [ -e "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/usr/bin/apt" ]; then
 echo "$CHROOT_NAME" > "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/debian_chroot"
+fi
 ### /etc/hosts
 cat > "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/hosts" <<- EOM
 127.0.0.1	localhost
@@ -251,6 +252,8 @@ EOM
 cat > "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/proc/uptime" <<- EOM
 6758.29 20194.15
 EOM
+### /proc/sys/kernel/cap_last_cap
+echo 0 > "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/proc/cap_last_cap"
 }
 
 echo "${GREEN}Configuring the Container ${YELLOW}$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME${NOATTR}"
@@ -268,21 +271,11 @@ prootcmd+=" --kernel-release=4.14.144-lxc --sysvipc -L -H -p"
 prootcmd+=" --rootfs=$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME"
 prootcmd+=" --cwd=/root"
 prootcmd+=" --bind=/dev --bind=/proc --bind=/sys"
-prootcmd+=" --bind=/storage/self/primary:/sdcard"
-prootcmd+=" --bind=/system --bind=/data --bind=/vendor"
-prootcmd+=" --bind=$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/proc/stat:/proc/stat"
-prootcmd+=" --bind=$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/proc/version:/proc/version"
-prootcmd+=" --bind=$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/proc/loadavg:/proc/loadavg"
-prootcmd+=" --bind=$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/proc/uptime:/proc/uptime"
-prootcmd+=" --bind=$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/proc/vmstat:/proc/vmstat"
-prootcmd+=" --bind=/proc/self/fd/0:/dev/stdin"
-prootcmd+=" --bind=/proc/self/fd/1:/dev/stdout"
-prootcmd+=" --bind=/proc/self/fd/2:/dev/stderr"
-prootcmd+=" --bind=/dev/urandom:/dev/random"
-prootcmd+=" --bind=$HOME:/home/termux_home"
-prootcmd+=" --bind=$PREFIX/tmp:/tmp"
 prootcmd+=" --bind=$PREFIX/tmp:/dev/shm"
-prootcmd+=" --bind=/storage --bind=/mnt:/mnt_ro"
+
+### Mountpoint Configuration can be specified, source it
+source $PREFIX/var/rlc/mountpoints.conf
+
 prootcmd+=" /usr/bin/env -i"
 prootcmd+=" HOME=/root USER=root TMPDIR=/tmp"
 prootcmd+=" PATH=/usr/local/bin:/usr/local/bin:/usr/local/games:/usr/bin:/usr/sbin:/usr/games:/bin:/sbin"
@@ -292,7 +285,7 @@ extcmd="${@:2}"
 if [ -z "$extcmd" ]; then
 	prootcmd+=" /bin/su -l"
 else
-	prootcmd+=" /usr/bin/sudo -i $extcmd"
+	prootcmd+=" /usr/bin/sudo -s $extcmd"
 fi
 
 ### Launch PRoot Environment

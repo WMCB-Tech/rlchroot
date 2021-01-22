@@ -24,7 +24,7 @@ if [ "$(whoami)" == "root" ]; then
 fi
 
 ### Check if no argument is specified
-if [ $# = 0 ]; then
+if [ $# = 0 ] || [ $1 == "--help" ]; then
 	echo "${GREEN}rlc-import: Imports Containers from Tarball"
 	echo ""
 	echo "Usage: "
@@ -62,7 +62,7 @@ done
 
 ### Restore the container
 echo "${YELLOW}Importing Container from file $INPUT_ARG...${NOATTR}"
-if proot --link2symlink -0 tar --recursive-unlink --delay-directory-restore --preserve-permissions -zxf "$INPUT_ARG" -C "$RLCHROOT_ROOTFS_DIR" >/dev/null 2>&1; then
+if tar --recursive-unlink --delay-directory-restore --preserve-permissions -zxf "$INPUT_ARG" -C "$RLCHROOT_ROOTFS_DIR" >/dev/null 2>&1; then
     success=yes
 else
     success=no
