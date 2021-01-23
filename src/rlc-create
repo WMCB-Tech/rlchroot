@@ -297,7 +297,7 @@ alpine(){
 
 archlinux(){
 	EXPECT="archlinux-$(uname -m).tar.gz"
-	STRIP_TARBALL=0
+	STRIP_TARBALL=1
 	### Arch Linux Drops support for 32-bit anymore
 	if [ "$(uname -m)" == "i686" ]; then
 		echo "${RED}WARNING: Archlinux Drops support for 32-bit anymore${NOATTR}"
