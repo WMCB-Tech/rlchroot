@@ -8,15 +8,15 @@ NOATTR="$(tput sgr0)"
 
 ### Configure Archlinux System
 if [ "$(uname -m)" = "x86_64" ]; then
-		sed -i 's/#Server = http/Server = http/' /etc/pacman.d/mirrorlist
+	sed -i 's/#Server = http/Server = http/' /etc/pacman.d/mirrorlist
 fi
 
 ### Initialize pacman key
 pacman-key --init
 if [ "$(uname -m)" = "x86_64" ]; then
-    pacman-key --populate archlinux
+	pacman-key --populate archlinux
 else
-		pacman-key --populate archlinuxarm
+	pacman-key --populate archlinuxarm
 fi
 
 ### Change Default Locale
@@ -28,10 +28,10 @@ echo "${GREEN}Removing Linux Kernel if possible${NOATTR}"
 ## Remove Kernel which is not necessary
 case "$(uname -m)" in
 		aarch64)
-			  pacman -Rnsc --noconfirm linux-aarch64
+			pacman -Rnsc --noconfirm linux-aarch64
 			;;
 		armv7l|armv8l)
-        pacman -Rnsc --noconfirm linux-armv7
+			pacman -Rnsc --noconfirm linux-armv7
 			;;
 esac
 echo "${GREEN}Updating the system and installing some packages${NOATTR}"
