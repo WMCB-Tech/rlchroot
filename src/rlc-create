@@ -44,16 +44,19 @@ case "$(uname -m)" in
 		DIST_ARCH_DEBIAN="dist-arm32v7"
 		DIST_ARCH_UBUNTU="armhf"
 		DIST_ARCH_ALPINE="armhf"
+		DIST_ARCH_ARCHLINUX="armv7"
 		;;
 	arm64|aarch64)
 		DIST_ARCH_DEBIAN="dist-arm64v8"
 		DIST_ARCH_UBUNTU="arm64"
 		DIST_ARCH_ALPINE="aarch64"
+		DIST_ARCH_ARCHLINUX="aarch64"
 		;;
 	amd64|x86_64)
 		DIST_ARCH_DEBIAN="dist-amd64"
 		DIST_ARCH_UBUNTU="amd64"
 		DIST_ARCH_ALPINE="x86_64"
+		DIST_ARCH_ARCHLINUX="x86_64"
 		;;
 	i686|i386|x86)
 		DIST_ARCH_DEBIAN="dist-i386"
@@ -293,20 +296,29 @@ alpine(){
 }
 
 archlinux(){
-	EXPECT="ubuntu-groovy-$(uname -m).tar.gz"
+	EXPECT="archlinux-$(uname -m).tar.gz"
 	STRIP_TARBALL=0
-	### Ubuntu 20.10 Drops support for 32-bit anymore
+	### Arch Linux Drops support for 32-bit anymore
 	if [ "$(uname -m)" == "i686" ]; then
-		echo "${RED}WARNING: Ubuntu 20.10 Drops support for 32-bit anymore${NOATTR}"
+		echo "${RED}WARNING: Archlinux Drops support for 32-bit anymore${NOATTR}"
 		exit 2
+	fi
+	### Check if the architecture is x86_64 (Archlinux tarball is not persistent)
+	if [ "$(uname -m)" == "x86_64" ]; then
+		wget_filename=(curl --fail --silent "https://mirror.rackspace.com/archlinux/iso/latest/md5sums.txt" | grep bootstrap | awk '{ print $2 }')
 	fi
 	### Declare Configs
 	check_arch
-	if [ -e "$RLCHROOT_CACHE/groovy/$EXPECT" ]; then
+	if [ -e "$RLCHROOT_CACHE/archlinux/$EXPECT" ]; then
 		DO_NOT_WGET=1
 	fi
-	WGET_URL_LINK="https://partner-images.canonical.com/core/groovy/current/ubuntu-groovy-core-cloudimg-${DIST_ARCH_UBUNTU}-root.tar.gz"
-	TEMPLATE="$RLCHROOT_TEMPLATES/groovy"
+	### Check for ArchLinux Architecture (The link is not the same)
+	if [ "$(uname -m)" == "x86_64" ]; then
+		WGET_URL_LINK="https://mirror.rackspace.com/archlinux/iso/latest/${wget_filename}"
+	else
+		WGET_URL_LINK="http://os.archlinuxarm.org/os/ArchLinuxARM-${DIST_ARCH_ARCHLINUX}-latest.tar.gz"
+	fi
+	TEMPLATE="$RLCHROOT_TEMPLATES/archlinux"
 }
 
 
@@ -376,6 +388,10 @@ case "$DISTRO_NAME" in
 	alpine)
 		DIST=alpine
 		alpine
+		;;
+	arch|archlinux)
+		DIST=archlinux
+		archlinux
 		;;
 	list)
 		list_distros
