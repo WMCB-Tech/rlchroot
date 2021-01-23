@@ -21,7 +21,6 @@ fi
 
 ### Change Default Locale
 echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
-echo "export LANG=en_US.UTF-8" >> /etc/profile
 
 ### Install some relevant packages
 echo "${GREEN}Removing Linux Kernel if possible${NOATTR}"
