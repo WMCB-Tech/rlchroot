@@ -305,7 +305,7 @@ archlinux(){
 	fi
 	### Check if the architecture is x86_64 (Archlinux tarball is not persistent)
 	if [ "$(uname -m)" == "x86_64" ]; then
-		wget_filename=(curl --fail --silent "https://mirror.rackspace.com/archlinux/iso/latest/md5sums.txt" | grep bootstrap | awk '{ print $2 }')
+		wget_filename=$(curl --fail --silent "https://mirror.rackspace.com/archlinux/iso/latest/md5sums.txt" | grep bootstrap | awk '{ print $2 }')
 	fi
 	### Declare Configs
 	check_arch
