@@ -6,11 +6,6 @@ GREEN="$(tput setaf 2)$(tput bold)"
 YELLOW="$(tput setaf 3)$(tput bold)"
 NOATTR="$(tput sgr0)"
 
-### Configure Archlinux System
-if [ "$(uname -m)" = "x86_64" ]; then
-	sed -i 's/#Server = http/Server = http/' /etc/pacman.d/mirrorlist
-fi
-
 ### Initialize pacman key
 pacman-key --init
 if [ "$(uname -m)" = "x86_64" ]; then
