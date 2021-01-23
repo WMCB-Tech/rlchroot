@@ -7,6 +7,7 @@
 ### * Debian (Buster/Stretch/Sid/Testing)
 ### * Kali (Rolling)
 ### * Alpine Linux
+### * Arch Linux
 ###
 ### Templates are registered in:
 ### $PREFIX/var/rlc/distro-templates
@@ -290,6 +291,24 @@ alpine(){
 	WGET_URL_LINK="https://dl-cdn.alpinelinux.org/alpine/v3.13/releases/${DIST_ARCH_ALPINE}/alpine-minirootfs-3.13.0-${DIST_ARCH_ALPINE}.tar.gz"
 	TEMPLATE="$RLCHROOT_TEMPLATES/alpine"
 }
+
+archlinux(){
+	EXPECT="ubuntu-groovy-$(uname -m).tar.gz"
+	STRIP_TARBALL=0
+	### Ubuntu 20.10 Drops support for 32-bit anymore
+	if [ "$(uname -m)" == "i686" ]; then
+		echo "${RED}WARNING: Ubuntu 20.10 Drops support for 32-bit anymore${NOATTR}"
+		exit 2
+	fi
+	### Declare Configs
+	check_arch
+	if [ -e "$RLCHROOT_CACHE/groovy/$EXPECT" ]; then
+		DO_NOT_WGET=1
+	fi
+	WGET_URL_LINK="https://partner-images.canonical.com/core/groovy/current/ubuntu-groovy-core-cloudimg-${DIST_ARCH_UBUNTU}-root.tar.gz"
+	TEMPLATE="$RLCHROOT_TEMPLATES/groovy"
+}
+
 
 ### Explicitly Check for Zero String for Argument
 if [ -z "$DISTRO_NAME" ]; then
