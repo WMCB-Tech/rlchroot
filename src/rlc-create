@@ -7,6 +7,7 @@
 ### * Debian (Buster/Stretch/Sid/Testing)
 ### * Kali (Rolling)
 ### * Alpine Linux
+### * Arch Linux and Arch Linux ARM
 ###
 ### Templates are registered in:
 ### $PREFIX/var/rlc/distro-templates
@@ -43,16 +44,19 @@ case "$(uname -m)" in
 		DIST_ARCH_DEBIAN="dist-arm32v7"
 		DIST_ARCH_UBUNTU="armhf"
 		DIST_ARCH_ALPINE="armhf"
+		DIST_ARCH_ARCHLINUX="armv7"
 		;;
 	arm64|aarch64)
 		DIST_ARCH_DEBIAN="dist-arm64v8"
 		DIST_ARCH_UBUNTU="arm64"
 		DIST_ARCH_ALPINE="aarch64"
+		DIST_ARCH_ARCHLINUX="aarch64"
 		;;
 	amd64|x86_64)
 		DIST_ARCH_DEBIAN="dist-amd64"
 		DIST_ARCH_UBUNTU="amd64"
 		DIST_ARCH_ALPINE="x86_64"
+		DIST_ARCH_ARCHLINUX="x86_64"
 		;;
 	i686|i386|x86)
 		DIST_ARCH_DEBIAN="dist-i386"
@@ -74,6 +78,7 @@ if [ $# = 0 ] || [ $1 == "--help" ]; then
 	echo " Debian"
 	echo " Kali"
 	echo " Alpine"
+	echo " Arch Linux"
 	echo "${GREEN}You can view the list of available flavors with ${YELLOW}rlc-create list${GREEN} command"
 	echo ""
 	echo "Example Usage: "
@@ -94,10 +99,13 @@ list_distros(){
 	echo "${YELLOW}zesty, artful, bionic, cosmic, disco, eoan, focal, groovy"
 	echo ""
 	echo "${GREEN}Kali:"
-	echo "${YELLOW}kali (rolling)${NOATTR}"
+	echo "${YELLOW}kali (rolling)"
 	echo ""
 	echo "${GREEN}Alpine:"
-	echo "${YELLOW}alpine (stable)${NOATTR}"
+	echo "${YELLOW}alpine (stable)"
+	echo ""
+	echo "${GREEN}Arch Linux:"
+	echo "${YELLOW}archlinux${NOATTR}"
 }
 
 ### Distro-Specific Functions
@@ -280,7 +288,7 @@ kali(){
 }
 
 alpine(){
-	EXPECT="alpine-$(uname -m).tar.xz"
+	EXPECT="alpine-$(uname -m).tar.gz"
 	STRIP_TARBALL=0
 	### Declare Configs
 	check_arch
@@ -289,6 +297,37 @@ alpine(){
 	fi
 	WGET_URL_LINK="https://dl-cdn.alpinelinux.org/alpine/v3.13/releases/${DIST_ARCH_ALPINE}/alpine-minirootfs-3.13.0-${DIST_ARCH_ALPINE}.tar.gz"
 	TEMPLATE="$RLCHROOT_TEMPLATES/alpine"
+}
+
+archlinux(){
+	EXPECT="archlinux-$(uname -m).tar.gz"
+	if [ "$(uname -m)" == "x86_64" ]; then
+		STRIP_TARBALL=1
+	else
+		STRIP_TARBALL=0
+	fi
+	### Arch Linux Drops support for 32-bit anymore
+	if [ "$(uname -m)" == "i686" ]; then
+		echo "${RED}WARNING: Archlinux Drops support for 32-bit anymore${NOATTR}"
+		exit 2
+	fi
+	### Check if Architecture is x86_64 (Arch Linux and Arch Linux ARM are different)
+	if [ "$(uname -m)" == "x86_64" ]; then
+		ARCHLINUX_SED=1
+		wget_filename=$(curl --fail --silent "https://mirror.rackspace.com/archlinux/iso/latest/md5sums.txt" | grep bootstrap | awk '{ print $2 }')
+	fi
+	### Declare Configs
+	check_arch
+	if [ -e "$RLCHROOT_CACHE/archlinux/$EXPECT" ]; then
+		DO_NOT_WGET=1
+	fi
+	### Check for Archlinux Architecture (Download links are different between them)
+	if [ "$(uname -m)" == "x86_64" ]; then
+		WGET_URL_LINK="https://mirror.rackspace.com/archlinux/iso/latest/${wget_filename}"
+	else
+		WGET_URL_LINK="http://os.archlinuxarm.org/os/ArchLinuxARM-${DIST_ARCH_ARCHLINUX}-latest.tar.gz"
+	fi
+	TEMPLATE="$RLCHROOT_TEMPLATES/archlinux"
 }
 
 ### Explicitly Check for Zero String for Argument
@@ -358,6 +397,10 @@ case "$DISTRO_NAME" in
 		DIST=alpine
 		alpine
 		;;
+	arch|archlinux)
+		DIST=archlinux
+		archlinux
+		;;
 	list)
 		list_distros
 		exit 0
@@ -397,7 +440,7 @@ do_extract_filesystem(){
 	DESTPATH="$RLCHROOT_CACHE/$DIST/$EXPECT"
 	echo "${GREEN}Installing the rootfs ${YELLOW}$DISTRO_NAME${GREEN}. This may take some time${NOATTR}"
 	mkdir "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" -p ||:
-	proot --link2symlink -0 tar --preserve-permissions --delay-directory-restore --strip="$STRIP_TARBALL" -xf "$DESTPATH" --exclude dev -C "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" ||:
+	proot --link2symlink -0 tar --warning=no-unknown-keyword --preserve-permissions --delay-directory-restore --strip="$STRIP_TARBALL" -xf "$DESTPATH" --exclude dev -C "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" ||:
 	### Change mode to guest /proc filesystem
 	chmod 700 "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/proc" -R
 }
@@ -414,10 +457,17 @@ setup_android_groups(){
 }
 
 setup_nameserver(){
+	rm -rf "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/resolv.conf"
 	cat > "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/resolv.conf" <<- EOM
 	nameserver 8.8.8.8
 	nameserver 8.8.4.4
 	EOM
+}
+
+setup_additional(){
+	if [ "$ARCHLINUX_SED" == "1" ]; then
+		sed -i 's/#Server = http/Server = http/g' "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/pacman.d/mirrorlist"
+	fi
 }
 
 if [ "$DO_NOT_WGET" == "1" ]; then
@@ -433,8 +483,10 @@ proot_run_cmd(){
 	echo "${GREEN}Performing Distro-Specific Steps${NOATTR}"
 	setup_android_groups
 	setup_nameserver
+	setup_additional
 	unset LD_PRELOAD
-	proot --link2symlink --root-id --kernel-release=4.14.144-lxc --rootfs="$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" --bind=/dev --bind=/proc --bind=/sys \
+	proot --link2symlink --kill-on-exit --root-id --kernel-release=4.14.144-lxc --rootfs="$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" --bind=/dev --bind=/proc --bind=/sys \
+	--bind=/dev/urandom:/dev/random \
 	--cwd=/root \
 	/usr/bin/env -i \
 	HOME=/root \
