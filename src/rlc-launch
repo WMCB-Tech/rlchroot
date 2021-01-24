@@ -54,11 +54,20 @@ if [ ! -e "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" ]; then
     exit 2
 fi
 
+### Check if custom PULSE_SERVER is specified
+if [ -z "$RLCHROOT_HOST_PULSE_SERVER" ]; then
+	export RLCHROOT_HOST_PULSE_SERVER="127.0.0.1"
+fi
+
 ### Sync Function
 sync_environment(){
 cat > "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/profile.d/rlchroot-env.sh" <<- EOM
 #!/bin/bash
-export LANG="C.UTF-8"
+if [ -e /usr/bin/pacman ]; then
+	export LANG="en_US.UTF-8"
+else
+	export LANG="C.UTF-8"
+fi
 export TMPDIR="/tmp"
 export EXTERNAL_SHARED_STORAGE="/sdcard"
 export MOZ_FAKE_NO_SANDBOX="1"
@@ -271,7 +280,7 @@ prootcmd+=" --kernel-release=4.14.144-lxc --sysvipc -L -H -p"
 prootcmd+=" --rootfs=$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME"
 prootcmd+=" --cwd=/root"
 prootcmd+=" --bind=/dev --bind=/proc --bind=/sys"
-prootcmd+=" --bind=$PREFIX/tmp:/dev/shm"
+prootcmd+=" --bind=$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/tmp:/dev/shm"
 
 ### Mountpoint Configuration can be specified, source it
 source $PREFIX/var/rlc/mountpoints.conf
