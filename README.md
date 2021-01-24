@@ -101,7 +101,7 @@ Features lacks include:
 * Seccomp Support
 
 # Security
-While rlchroot does not require cgroups or extra layers of security. you may still get into trouble including stolen passwords, gaining access to your host partition, by default, rlchroot mounts your `/sdcard` `/system` and `/data` partition so be careful on what you're doing as you break stuff
+While rlchroot does not require cgroups or extra layers of security. you may still get into trouble including stolen passwords, ~~gaining access to your host partition, by default, rlchroot mounts your `/sdcard` `/system` and `/data` partition so be careful on what you're doing as you break stuff~~ Mounted Partitions can be configured in `$PREFIX/var/rlc/mountpoints.conf`
 
 # Contributing
 Contributions are welcome, you may create PR's, submit a bug report and create a Feature Requests
