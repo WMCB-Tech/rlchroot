@@ -1,0 +1,40 @@
+#!/bin/bash
+
+### Colored Environment Variables
+RED="$(tput setaf 1)$(tput bold)"
+GREEN="$(tput setaf 2)$(tput bold)"
+YELLOW="$(tput setaf 3)$(tput bold)"
+NOATTR="$(tput sgr0)"
+
+### Temporarily set locale to en_US
+export LANG=en_US.UTF-8
+
+### Initialize pacman key
+pacman-key --init
+if [ "$(uname -m)" == "x86_64" ]; then
+    pacman-key --populate archlinux
+else
+    pacman-key --populate archlinuxarm
+fi
+
+### Change Default Locale
+echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+
+### Delete Redundant Packages (Kernel: Not necessary and is not fully emulated via proot)
+echo "${GREEN}Removing Linux Kernel if possible${NOATTR}"
+case "$(uname -m)" in
+    aarch64)
+        pacman -Rscn --noconfirm linux-aarch64
+        ;;
+    armv7)
+        pacman -Rscn --noconfirm linux-armv7
+        ;;
+esac
+echo "${GREEN}Updating the system and installing some packages if necessary${NOATTR}"
+pacman -Syu --noconfirm
+echo "${GREEN}Installing Packages: ${YELLOW}base, nano, sudo${NOATTR}"
+pacman -S sudo nano base --noconfirm
+
+echo "${GREEN}Adding the user ${YELLOW}user${NOATTR}"
+useradd -m user -s /bin/bash
+echo "user ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/user
