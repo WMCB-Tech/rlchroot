@@ -265,6 +265,34 @@ EOM
 echo 0 > "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/proc/cap_last_cap"
 }
 
+setup_groups_if_needed(){
+	chmod 4644 "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/passwd"
+	chmod 4644 "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/shadow"
+	chmod 4644 "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/group"
+	echo "aid_$(id -un):x:$(id -u):$(id -g):Android UID:/:/usr/sbin/nologin" >> "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/passwd"
+	echo "aid_$(id -un):*:18446:0:99999:7:::" >> "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/shadow"
+		for g in $(id -G); do
+			echo "aid_$(id -gn "$g"):x:${g}:root,aid_$(id -un)" >> "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/group"
+			if [ -f "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/gshadow" ]; then
+				chmod 4644 "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/gshadow"
+				echo "aid_$(id -gn "$g"):*::root,aid_$(id -un)" >> "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/gshadow"
+			fi
+		done
+}
+
+setup_procfiles(){
+	chmod 700 -R "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/proc"
+	rm -rf "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/proc"
+	mkdir "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/proc"
+}
+
+### Do Quick Setup if needed (Used for custom containers)
+if [ ! -e "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/.setup_done" ]; then
+	setup_groups_if_needed
+	setup_procfiles
+	touch "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/.setup_done"
+fi
+
 echo "${GREEN}Configuring the Container ${YELLOW}$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME${NOATTR}"
 config_container
 echo "${GREEN}Syncing Environment"
