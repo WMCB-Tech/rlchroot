@@ -22,7 +22,7 @@ RLChroot isn't nearly that complex as LXC/LXD does, `rlchroot` uses `proot` for 
 # Installation
 Enter the following commands to install rlchroot
 ```
-deb [trusted=yes arch=all] https://wmcb-tech.github.io/files termux universe >> $PREFIX/etc/apt/sources.list.d/rlchroot.list
+echo "deb [trusted=yes arch=all] https://wmcb-tech.github.io/files termux universe" >> $PREFIX/etc/apt/sources.list.d/rlchroot.list
 pkg up && pkg in rlchroot
 ```
 
