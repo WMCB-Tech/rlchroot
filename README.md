@@ -20,9 +20,13 @@ Here are the distros we're planning to add:
 RLChroot isn't nearly that complex as LXC/LXD does, `rlchroot` uses `proot` for chrooting, it uses `ptrace()` and does not use cgroups, veth and seccomp or any PAM Modules, as it uses host resources and limitations may occur, see below
 
 # Installation
-To install rlchroot, download the [debian package file](https://git.io/JtGD4) and install it via `dpkg` or `apt`
+Enter the following commands to install rlchroot
+```
+deb [trusted=yes arch=all] https://wmcb-tech.github.io/files termux universe >> $PREFIX/etc/apt/sources.list.d/rlchroot.list
+pkg up && pkg in rlchroot
+```
 
-If you get dependency errors when using `dpkg`, run `apt install -f`
+If you can't use `apt` or you want to use older versions, you can go to [Releases](https://github.com/WMCB-Tech/rlchroot/releases) page
 
 # RLC Commands
 Here are the commands that is available, and others will be implemented in the future, for now here are the commands that is available:
