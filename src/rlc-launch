@@ -319,14 +319,11 @@ prootcmd+=" HOME=/root USER=root TMPDIR=/tmp"
 prootcmd+=" PATH=/usr/local/bin:/usr/local/bin:/usr/local/games:/usr/bin:/usr/sbin:/usr/games:/bin:/sbin"
 prootcmd+=" TERM=$TERM LANG=C.UTF-8"
 extcmd="${@:2}"
-### We Define the External Command
-if [ -z "$extcmd" ]; then
-	prootcmd+=" /bin/su -l"
-else
-	prootcmd+=" /usr/bin/sudo -s $extcmd"
-fi
-
 ### Launch PRoot Environment
-$prootcmd
+if [ -z "$extcmd" ]; then
+	$prootcmd /bin/su -l
+else
+	$prootcmd /bin/su -c "$extcmd"
+fi
 
 ### END OF MESSAGE EOM
