@@ -3,6 +3,8 @@
 # rlchroot - RootLess Chroot
 RLChroot (RLC) Allows you to install Linux distros on your Android device without rooting, giving an LXC Like Interface inspired by [Udocker](https://github.com/indigo-dc/udocker)
 
+> rlchroot is just a chroot manager for Termux but it has templates configuration allows you to easily install distros pre-defined, users can manually setup distros on their own without template configs at all
+
 ### Supported Distros
 The only distros that i can maintain is the subset of distros (`Ubuntu`, `Debian`, `Kali`, `Alpine`, `Arch Linux`), each of them has releases supported (see `rlc-create list` command)
 
