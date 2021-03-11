@@ -5,13 +5,12 @@ The `rlc-export` command allows you to export your entire container installation
 
 Example:
 ```
-rlc-export mycontainer
+rlc-export mycontainer container.tar.gz
 ```
 
 This will dump the container into gzipped tarball (stdout export isn't yet implemented)
 
 ***Notes when backing up containers***
-* The exported container will be outputed at `$HOME/exported_containers`
 * Data corruption may occur when running containers during the export process
 * This will output the tarball into gzip
 
