@@ -1,5 +1,5 @@
 Package: rlchroot
-Version: 1.06
+Version: 1.07
 Section: Containers
 Priority: optional
 Architecture: all
