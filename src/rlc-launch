@@ -50,14 +50,22 @@ fi
 
 ### Check whether the container exists
 if [ ! -e "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" ]; then
-    echo "${RED}WARNING: The requested container name ${YELLOW}$CHROOT_NAME${RED} isn't installed${NOATTR}"
-    exit 2
+	echo "${RED}WARNING: The requested container name ${YELLOW}$CHROOT_NAME${RED} isn't installed${NOATTR}"
+	exit 2
+fi
+
+### Check if hostname file exists
+if [ ! -e "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/hostname" ]; then
+	echo "$CHROOT_NAME" > "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/hostname"
 fi
 
 ### Check if custom PULSE_SERVER is specified
 if [ -z "$RLCHROOT_HOST_PULSE_SERVER" ]; then
 	export RLCHROOT_HOST_PULSE_SERVER="127.0.0.1"
 fi
+
+### Hostname Specification
+HOSTNAME_SPEC="$(cat $RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/hostname)"
 
 ### Sync Function
 sync_environment(){
@@ -105,10 +113,8 @@ fi
 cat > "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/hosts" <<- EOM
 127.0.0.1	localhost
 ::1			localhost
-127.0.1.1	localhost.localdomain	localhost
+127.0.1.1	$HOSTNAME_SPEC.localdomain	$HOSTNAME_SPEC
 EOM
-### /etc/hostname
-echo "localhost" > "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/hostname"
 ### /etc/resolv.conf
 rm -rf "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/resolv.conf"
 cat > "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME/etc/resolv.conf" <<- EOM
@@ -303,9 +309,16 @@ sync_environment
 echo "Starting the Linux Environment ${YELLOW}$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME${NOATTR}"
 ### unset LD_PRELOAD which it redefines termux-exec for shebangs
 unset LD_PRELOAD
-prootcmd="proot"
+kompat_source="\\$(uname -s)\\$HOSTNAME_SPEC\\4.14-144-lxc\\$(uname -v)\\$(uname -m)\\localdomain\\-1\\"
 prootcmd+=" --link2symlink --kill-on-exit --root-id"
-prootcmd+=" --kernel-release=4.14.144-lxc --sysvipc -L -H -p"
+
+### Enable --sysvipc if Android version is 7 and above
+case "$(getprop ro.build.version.release)" in
+	5*|6*) ;;
+	*) prootcmd+=" --sysvipc"
+esac
+
+prootcmd+=" -L -H -p"
 prootcmd+=" --rootfs=$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME"
 prootcmd+=" --cwd=/root"
 prootcmd+=" --bind=/dev --bind=/proc --bind=/sys"
@@ -321,9 +334,9 @@ prootcmd+=" TERM=$TERM LANG=C.UTF-8"
 extcmd="${@:2}"
 ### Launch PRoot Environment
 if [ -z "$extcmd" ]; then
-	$prootcmd /bin/su -l
+	proot -k "$kompat_source" $prootcmd /bin/su -l
 else
-	$prootcmd /bin/su -c "$extcmd"
+	proot -k "$kompat_source" $prootcmd /bin/su -c "$extcmd"
 fi
 
 ### END OF MESSAGE EOM
