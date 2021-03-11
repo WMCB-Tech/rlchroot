@@ -33,9 +33,9 @@ if [ $# = 0 ] || [ $1 == "--help" ]; then
 	echo "${GREEN}Example Usage: "
 	echo "${YELLOW}rlc-import ubuntu-backup-arm64.tar.gz"
 	echo "rlc-import kali-backup.dump"
-    echo ""
-    echo "${GREEN}NOTE: Using this tool will not perform any sanity checks"
-    echo "So Be careful on what you're trying to import as data loss will occur${NOATTR}"
+	echo ""
+	echo "${GREEN}NOTE: Using this tool will not perform any sanity checks"
+	echo "So Be careful on what you're trying to import as data loss will occur${NOATTR}"
 	exit 2
 fi
 
@@ -47,33 +47,32 @@ fi
 
 ### Check if the file exists
 if [ ! -e "$INPUT_ARG" ]; then
-    echo "${RED}Cannot Import the Container: no such file or directory${NOATTR}"
-    exit 2
+	echo "${RED}Cannot Import the Container: no such file or directory${NOATTR}"
+	exit 2
 fi
 
-while true; do
-    read -p "${GREEN}Do you want to import ${YELLOW}$INPUT_ARG${GREEN}? [y/N] ${GREEN}" yn
-    case $yn in
-        [Yy]* ) true; break;;
-        [Nn]* ) echo "${YELLOW}Aborting...${NOATTR}"; exit 0;;
-        * ) echo "${YELLOW}Aborting...${NOATTR}"; exit 0;;
-    esac
-done
+
+read -p "${GREEN}Do you want to import ${YELLOW}$INPUT_ARG${GREEN}? [y/N] ${GREEN}" yn
+case $yn in
+	Y*|y*) ;;
+	N*|n*) echo "${YELLOW}Aborting...${NOATTR}"; exit 0;;
+	*) echo "${YELLOW}Aborting...${NOATTR}"; exit 0;;
+esac
 
 ### Restore the container
 echo "${YELLOW}Importing Container from file $INPUT_ARG...${NOATTR}"
 if tar --recursive-unlink --delay-directory-restore --preserve-permissions -zxf "$INPUT_ARG" -C "$RLCHROOT_ROOTFS_DIR" >/dev/null 2>&1; then
-    success=yes
+	success=yes
 else
-    success=no
+	success=no
 fi
 
 if [ "$success" == "yes" ]; then
-    echo "${GREEN}The Container Successfully Imported${NOATTR}"
-    exit 0
+	echo "${GREEN}The Container Successfully Imported${NOATTR}"
+	exit 0
 else
-    echo "${RED}The Container Successfully Imported with Errors${NOATTR}"
-    exit 2
+	echo "${RED}The Container Successfully Imported with Errors${NOATTR}"
+	exit 2
 fi
 
 ### END OF MESSAGE EOM
