@@ -2,10 +2,8 @@
 ### rlc-export - exports the containers into tarball used for publishing images
 ### All Rights Reserved @wmcbtech30 (2021)
 RLCHROOT_ROOTFS_DIR="$PREFIX/var/rlc/containers"
-BACKUP_DIR="$HOME/exported_containers"
-TIMESTAMP="$(date +%s)"
 CHROOT_NAME="$1"
-
+BACKUP_OUTPUT="$2"
 
 ### Colored Environment Variables
 RED="$(tput setaf 1)$(tput bold)"
@@ -34,11 +32,10 @@ if [ $# = 0 ] || [ $1 == "--help" ]; then
 	echo "${YELLOW}rlc-export [CHROOT-NAME]"
 	echo ""
 	echo "${GREEN}Example Usage: "
-	echo "${YELLOW}rlc-export kali-rootfs"
-	echo "rlc-export ubuntu-focal"
+	echo "${YELLOW}rlc-export kali-rootfs kali.tar.gz"
+	echo "rlc-export ubuntu-focal ubuntu-snapshot.tar.gz"
 	echo ""
-	echo "${GREEN}NOTE: To avoid data corruption, close all containers before exporting"
-	echo "By Default, exported containers will be placed in \$HOME/exported_containers ${NOATTR}"
+	echo "${GREEN}NOTE: To avoid data corruption, close all containers before exporting${NOATTR}"
 	exit 2
 fi
 
@@ -54,28 +51,27 @@ if [ ! -e "$RLCHROOT_ROOTFS_DIR/$CHROOT_NAME" ]; then
 	exit 2
 fi
 
-### Setup Backup Directory
-mkdir -p "$BACKUP_DIR"
-
-### Go To the Container dir to avoid adding subdirectory
-cd "$RLCHROOT_ROOTFS_DIR"
+### Specify the path to export the tarball
+if [ -z "$BACKUP_OUTPUT" ]; then
+	echo "${RED}Please specify the filename you want to export${NOATTR}"
+	exit 2
+fi
 
 ### Backup the Container
 echo "${YELLOW}Backing Up $RLCHROOT_ROOTFS_DIR/$CHROOT_NAME...${NOATTR}"
-if tar --preserve-permissions -zcf "$BACKUP_DIR/$CHROOT_NAME-$TIMESTAMP.tar.gz" "$CHROOT_NAME"; then
+if tar --preserve-permissions -C "$RLCHROOT_ROOTFS_DIR" -zcf "$BACKUP_OUTPUT" "$CHROOT_NAME"; then
 	success=yes
 else
 	success=no
 fi
 
 if [ "$success" == "yes" ]; then
-    echo "${GREEN}The Container Successfully Exported"
-	echo "Your file is placed in:"
-	echo "${YELLOW}$BACKUP_DIR/$CHROOT_NAME-$TIMESTAMP.tar.gz${NOATTR}"
-    exit 0
+	echo "${GREEN}The Container Successfully Exported as"
+	echo "${YELLOW}$BACKUP_OUTPUT${NOATTR}"
+	exit 0
 else
-    echo "${RED}The Container Successfully Exported with Errors${NOATTR}"
-    exit 2
+	echo "${RED}The Container Successfully Exported with Errors${NOATTR}"
+	exit 2
 fi
 
 ### END OF MESSAGE EOM
